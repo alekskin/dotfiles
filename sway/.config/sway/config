@@ -4,10 +4,13 @@
 #
 # Read `man 5 sway` for a complete reference.
 
+exec_always /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec_always mako
+
 font pango: JetBrainsMono NFM Medium 14
 
-gaps inner 4
-gaps outer 4
+gaps inner 2
+gaps outer 2
 
 default_border pixel 0
 
@@ -21,7 +24,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term foot
+set $term alacritty
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -34,15 +37,15 @@ set $menu wofi --show run | xargs swaymsg exec --
 output * bg ~/.config/sway/bg.jpg fill
 
 # Thinkpad
+# output eDP-1 {
+# 	mode 1920x1080@59.999Hz
+# 	scale 1.0
+# }
+# Macbook Air 11 2015
 output eDP-1 {
-	mode 1920x1080@59.999Hz
+	mode 1366x768@60.000Hz
 	scale 1.0
 }
-#
-# Example configuration:
-#
-#   output HDMI-A-1 resolution 1920x1080 position 1920,0
-#
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
 ### Idle configuration
@@ -73,7 +76,6 @@ output eDP-1 {
 # Read `man 5 sway-input` for more information about this section.
 
 input "type:touchpad" {
-	accel_profile adaptive
 	click_method clickfinger
 	natural_scroll enabled
 	tap enabled
@@ -93,7 +95,7 @@ input "type:keyboard" {
     bindsym $mod+Return exec $term
 
     # Kill focused window
-    bindsym $mod+Shift+q kill
+    bindsym $mod+q kill
 
     # Start your launcher
     bindsym $mod+d exec $menu
@@ -107,8 +109,6 @@ input "type:keyboard" {
 
     # Reload the configuration file
     bindsym $mod+Shift+c reload
-    
-    
 
     # Exit sway (logs you out of your Wayland session)
     bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
@@ -210,6 +210,8 @@ bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
 bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+bindsym XF86KbdBrightnessUp exec brightnessctl -d "smc::kbd_backlight" set 10%+
+bindsym XF86KbdBrightnessDown exec brightnessctl -d "smc::kbd_backlight" set 10%-
 
 #
 # Resizing containers:
@@ -219,16 +221,16 @@ mode "resize" {
     # right will grow the containers width
     # up will shrink the containers height
     # down will grow the containers height
-    bindsym $left resize shrink width 10px
+    bindsym $left resize grow width 10px
+    bindsym $right resize shrink width 10px
     bindsym $down resize grow height 10px
     bindsym $up resize shrink height 10px
-    bindsym $right resize grow width 10px
 
     # Ditto, with arrow keys
-    bindsym Left resize shrink width 10px
+    bindsym Left resize grow width 10px
+    bindsym Right resize shrink width 10px
     bindsym Down resize grow height 10px
     bindsym Up resize shrink height 10px
-    bindsym Right resize grow width 10px
 
     # Return to default mode
     bindsym Return mode "default"

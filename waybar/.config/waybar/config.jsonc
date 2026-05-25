@@ -2,10 +2,10 @@
 {
     "layer": "top", // Waybar at top layer
     "position": "top", // Waybar position (top|bottom|left|right)
-    "height": 10, // Waybar height (to be removed for auto height)
+    "height": 12, // Waybar height (to be removed for auto height)
     // "width": 1280, // Waybar width
     "spacing": 0, // Gaps between modules (4px)
-    "margin": 8,
+    "margin": 0,
     // Choose the order of the modules
     "modules-left": [
         "sway/workspaces",
@@ -23,8 +23,8 @@
         "pulseaudio#microphone",
         "network",
         // "power-profiles-daemon",
-        // "cpu",
-        // "memory",
+        "cpu",
+        "memory",
         // "temperature",
         // "backlight",
         // "keyboard-state",
