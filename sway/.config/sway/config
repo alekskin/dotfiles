@@ -12,7 +12,10 @@ font pango: JetBrainsMono NFM Medium 14
 gaps inner 2
 gaps outer 2
 
-default_border pixel 0
+default_border pixel 2
+client.focused          #89b4fa #89b4fa #1e1e2e #89b4fa #89b4fa
+client.unfocused        #313244 #313244 #585b70 #313244 #313244
+client.focused_inactive #313244 #313244 #585b70 #313244 #313244
 
 ### Variables
 #
@@ -201,8 +204,14 @@ input "type:keyboard" {
     # If there are multiple scratchpad windows, this command cycles through them.
     bindsym $mod+minus scratchpad show
 
-# Special keys
+# TUI launchers
+    bindsym $mod+ctrl+b exec rfkill unblock bluetooth && foot --app-id=floating-tui -e bluetui
+    bindsym $mod+ctrl+w exec rfkill unblock wifi && foot --app-id=floating-tui -e impala
+    bindsym $mod+ctrl+p exec ~/.config/sway/scripts/power-menu.sh
+    bindsym $mod+ctrl+f exec thunar
 
+# Special keys
+bindsym --locked XF86PowerOff exec ~/.config/sway/scripts/power-menu.sh
 
 bindsym XF86MonBrightnessDown exec brightnessctl set 10%-
 bindsym XF86MonBrightnessUp exec brightnessctl set 10%+
@@ -237,6 +246,8 @@ mode "resize" {
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
+
+for_window [app_id="floating-tui"] floating enable, resize set 900 600
 
 bar {
 	swaybar_command waybar
