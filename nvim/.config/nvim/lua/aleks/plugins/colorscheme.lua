@@ -51,7 +51,7 @@ return {
     {
         "omacom-io/lumon.nvim",
         config = function()
-            vim.cmd("colorscheme lumon")
+            -- vim.cmd("colorscheme lumon")
         end,
     },
 }
