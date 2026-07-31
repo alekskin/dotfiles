@@ -23,3 +23,13 @@ decorations = "Transparent"
 padding = { x = 8, y = 10 }
 dynamic_padding = true
 option_as_alt = "OnlyLeft"
+
+[terminal]
+osc52 = "CopyPaste"
+
+# Ctrl+V pastes (instead of the usual Ctrl+Shift+V). Ctrl+C stays interrupt.
+[keyboard]
+bindings = [
+  { key = "V", mods = "Control", action = "Paste" },
+  { key = "V", mods = "Control|Shift", action = "Paste" },
+]

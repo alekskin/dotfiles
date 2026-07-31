@@ -1,0 +1,12 @@
+# Mirror of capture/clipboard-related deps; canonical list is ~/arch/packages/packages.txt
+# Install: sudo pacman -S --needed $(grep -vE '^\s*(#|$)' PACKAGES | tr '\n' ' ')
+wl-clipboard
+cliphist
+wl-clip-persist
+grim
+slurp
+libnotify
+wf-recorder
+jq
+mako
+ffmpeg

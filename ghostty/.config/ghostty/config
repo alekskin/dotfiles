@@ -10,6 +10,10 @@ font-thicken-strength = 100
 gtk-tabs-location = bottom
 gtk-wide-tabs = false
 
+# Paste with Ctrl+V (instead of the usual Ctrl+Shift+V)
+keybind = ctrl+v=paste_from_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+
 ### tmux-like controls with <leader> sequence
 
 # tabs

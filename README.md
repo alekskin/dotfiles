@@ -1,30 +1,34 @@
 # Dotfiles
 
-Use GNU `stow` to create config's symlinks.
+Sway desktop config (waybar, mako, wofi, bash, terminals, nvim, …).
 
-1. Clone this repo to your home dir
+## Install (after packages)
 
-2. Use GNU `stow` to create symlinks to to this repo.
-
-Individual config:
-
+```bash
+# From arch setup (automatic), or manually:
+cd ~/dotfiles
+./install.sh
 ```
+
+Uses **GNU stow** to symlink packages into `$HOME` / `.config`.
+
+## Stow one package
+
+```bash
 stow nvim
+stow sway
 ```
 
-Or all at once:
+## Pair with system bootstrap
 
-```
-stow */
-```
+System packages + services: [arch](https://github.com/BabkinAleksandr/arch) (`./setup.sh`).
 
-This will create corresponding symlinks in your `.config` directory:
+## Layout
 
-```
-HOME/
-  .config/
-    nvim
-      ...
-    alactirry
-      ...
+Each top-level directory is a stow package, e.g.:
+
+```text
+sway/.config/sway/...
+bash/.bashrc
+waybar/.config/waybar/...
 ```

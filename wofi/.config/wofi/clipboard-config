@@ -1,0 +1,15 @@
+# Wofi config for clipboard history only (images enabled)
+stylesheet=style.css
+width=640
+height=420
+location=center
+prompt=Clipboard
+insensitive=true
+hide_scroll=true
+matching=contains
+allow_images=true
+allow_markup=false
+no_actions=true
+cache_file=/dev/null
+image_size=128
+dynamic_lines=true

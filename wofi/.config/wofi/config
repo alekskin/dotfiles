@@ -1,0 +1,20 @@
+# Matches waybar / sway Catppuccin Mocha palette
+stylesheet=style.css
+
+# Compact launcher (Omarchy-ish proportions)
+width=480
+height=320
+location=center
+prompt=
+insensitive=true
+hide_scroll=true
+matching=contains
+dynamic_lines=false
+allow_images=false
+allow_markup=true
+no_actions=true
+term=alacritty
+
+# Keep $menu pipe working: print command instead of exec
+run-print_command=true
+drun-print_command=true

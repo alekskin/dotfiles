@@ -1,0 +1,68 @@
+# Mako — Omarchy-style layout, Catppuccin Mocha colors (matches waybar/sway)
+
+# Placement & size
+anchor=top-right
+width=420
+outer-margin=12
+padding=10,15
+border-size=2
+border-radius=0
+max-icon-size=32
+icons=1
+markup=1
+actions=1
+history=1
+max-history=20
+default-timeout=5000
+ignore-timeout=0
+layer=top
+max-visible=5
+sort=-time
+group-by=app-name,summary
+
+# Catppuccin Mocha
+font=JetBrainsMono Nerd Font 12
+background-color=#1e1e2ecc
+text-color=#cdd6f4
+border-color=#89b4fa
+progress-color=over #89b4fa
+
+# Click behaviour (Omarchy defaults)
+on-button-left=invoke-default-action
+on-button-right=dismiss
+on-button-middle=dismiss-all
+on-touch=dismiss
+
+# Quiet noisy apps (optional)
+[app-name=Spotify]
+invisible=1
+
+# Do-not-disturb mode (toggle with Super+Ctrl+comma)
+[mode=do-not-disturb]
+invisible=1
+
+# Still show notify-send while silenced (status feedback for the toggle itself)
+[mode=do-not-disturb app-name=notify-send]
+invisible=0
+
+# Critical stays until dismissed
+[urgency=critical]
+border-color=#f38ba8
+default-timeout=0
+layer=overlay
+
+[urgency=low]
+border-color=#585b70
+default-timeout=3000
+
+[urgency=normal]
+border-color=#89b4fa
+
+# Larger preview for screenshot notifications
+[summary~="Screenshot"]
+max-icon-size=96
+format=<b>%s</b>\n%b
+
+[summary~="Screen recording"]
+max-icon-size=48
+format=<b>%s</b>\n%b

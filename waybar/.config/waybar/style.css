@@ -50,9 +50,25 @@ window#waybar {
 #pulseaudio,
 #cpu,
 #battery,
-#language {
+#language,
+#custom-idle {
   min-width: 12px;
   margin: 0 7.5px;
+}
+
+#custom-idle.active {
+  color: #f9e2af;
+}
+
+#custom-screenrecord {
+  min-width: 12px;
+  margin: 0 7.5px;
+  margin-right: 16px;
+}
+
+#custom-screenrecord.recording {
+  color: #f38ba8;
+  font-weight: bold;
 }
 
 #tray {
