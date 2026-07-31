@@ -14,6 +14,11 @@ if command -v starship >/dev/null 2>&1; then
   eval "$(starship init bash)"
 fi
 
+# fzf key bindings + fuzzy completion (https://junegunn.github.io/fzf/installation/)
+if command -v fzf >/dev/null 2>&1; then
+  eval "$(fzf --bash)"
+fi
+
 PATH="$PATH:$HOME/.local/bin"
 
 # opencode
