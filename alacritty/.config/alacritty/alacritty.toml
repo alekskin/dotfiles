@@ -27,9 +27,12 @@ option_as_alt = "OnlyLeft"
 [terminal]
 osc52 = "CopyPaste"
 
-# Ctrl+V pastes (instead of the usual Ctrl+Shift+V). Ctrl+C stays interrupt.
+# Super+C/V (sway → wtype) inject Ctrl+Insert / Shift+Insert.
+# Keep Ctrl+C as interrupt; optional Ctrl+Shift+C/V still work in-terminal.
 [keyboard]
 bindings = [
-  { key = "V", mods = "Control", action = "Paste" },
+  { key = "Insert", mods = "Shift", action = "Paste" },
+  { key = "Insert", mods = "Control", action = "Copy" },
   { key = "V", mods = "Control|Shift", action = "Paste" },
+  { key = "C", mods = "Control|Shift", action = "Copy" },
 ]

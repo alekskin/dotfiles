@@ -121,6 +121,9 @@ def describe(action: str) -> str:
         (r"playerctl play-pause", "Play / pause"),
         (r"playerctl next", "Next track"),
         (r"playerctl previous", "Previous track"),
+        (r"wtype.*ctrl.*Insert", "Copy (universal)"),
+        (r"wtype.*shift.*Insert", "Paste (universal)"),
+        (r"wtype.*-k x", "Cut (universal)"),
         (r"kbd_backlight.*10%\+", "Keyboard backlight up"),
         (r"kbd_backlight.*10%-", "Keyboard backlight down"),
     ]

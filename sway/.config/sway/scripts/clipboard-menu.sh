@@ -1,7 +1,7 @@
 #!/bin/bash
 # Pick an entry from cliphist and put it back on the clipboard.
 # Images: thumbnail preview in wofi (metadata burned into the thumb).
-# Bound to Ctrl+Shift+V.
+# Bound to Super+Ctrl+V.
 #
 # Thumbnails: ${XDG_CACHE_HOME:-$HOME/.cache}/cliphist/thumbs/<id>.png
 # Clipboard images have no original filesystem path — only this cache + cliphist db.

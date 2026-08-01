@@ -177,11 +177,10 @@ input "type:keyboard" {
 #
 # Layout stuff:
 #
-    # You can "split" the current object of your focus with
-    # $mod+b or $mod+v, for horizontal and vertical splits
-    # respectively.
+    # Split: Super+b horizontal; Super+\ vertical
+    # Super+v = paste; Super+Shift+1..0 = move window to workspace (unchanged)
     bindsym $mod+b splith
-    bindsym $mod+v splitv
+    bindsym $mod+backslash splitv
 
     # Switch the current container between different layout styles
     bindsym $mod+s layout stacking
@@ -218,8 +217,12 @@ input "type:keyboard" {
     bindsym $mod+ctrl+p exec ~/.config/sway/scripts/power-menu.sh
     bindsym $mod+ctrl+f exec thunar
 
-# Clipboard history (Ctrl+Shift+V)
-    bindsym Ctrl+Shift+v exec ~/.config/sway/scripts/clipboard-menu.sh
+# Universal clipboard (Omarchy-style Super+C/X/V via wtype → Insert / Ctrl+X)
+# Works in apps that honor Ctrl+Insert / Shift+Insert (terminals, most GTK/Qt).
+    bindsym $mod+c exec wtype -M ctrl -P Insert -m ctrl -p Insert
+    bindsym $mod+x exec wtype -M ctrl -k x -m ctrl
+    bindsym $mod+v exec wtype -M shift -P Insert -m shift -p Insert
+    bindsym $mod+ctrl+v exec ~/.config/sway/scripts/clipboard-menu.sh
 
 # Capture menu (Omarchy-style Super+Ctrl+C): screenshot region/full + screenrecord
     bindsym $mod+ctrl+c exec ~/.config/sway/scripts/capture-menu.sh
