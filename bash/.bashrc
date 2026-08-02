@@ -9,6 +9,10 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 PS1='[\u@\h \W]\$ '
 
+# Default editor (git, systemctl edit, etc.) — package: neovim
+export EDITOR=nvim
+export VISUAL=nvim
+
 # Prompt (https://starship.rs) — package: starship
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init bash)"
