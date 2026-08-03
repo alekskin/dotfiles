@@ -2,6 +2,14 @@
 # ~/.bashrc
 #
 
+# Point ssh at the systemd --user ssh-agent (ssh-agent.service) so the key
+# passphrase is cached once per login instead of asked on every push. The
+# sway session doesn't propagate environment.d to shells, so set it here.
+# Before the interactive guard so non-interactive git-over-ssh gets it too.
+if [ -z "${SSH_AUTH_SOCK:-}" ] && [ -n "${XDG_RUNTIME_DIR:-}" ] && [ -S "$XDG_RUNTIME_DIR/ssh-agent.socket" ]; then
+  export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+fi
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
