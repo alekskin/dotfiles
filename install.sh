@@ -50,6 +50,11 @@ preclean_conflicts() {
   done < <(find "$pkg" -mindepth 1 \( -type f -o -type l \) -print0)
 }
 
+# Ensure ~/.ssh is a real directory before stowing. Otherwise stow "folds" a
+# missing ~/.ssh into a symlink pointing at the repo, and generated keys would
+# be written inside the repo. Pre-creating it makes stow link files *into* it.
+mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+
 echo "=== stow dotfiles from $DOTFILES_DIR ==="
 for pkg in "${packages[@]}"; do
   if [[ -d "$pkg" ]]; then
