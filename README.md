@@ -21,7 +21,7 @@ stow sway
 
 ## Pair with system bootstrap
 
-System packages + services: [arch](https://github.com/BabkinAleksandr/arch) (`./setup.sh`).
+System packages + services: [arch](https://github.com/alekskin/arch) (`./setup.sh`).
 
 ## Layout
 
