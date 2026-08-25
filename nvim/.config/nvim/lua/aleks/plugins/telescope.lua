@@ -30,6 +30,8 @@ return {
             },
         })
 
+        telescope.load_extension("fzf")
+
         -- keymaps
         vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
         vim.keymap.set("n", "<C-p>", builtin.git_files, { desc = "Git files" })

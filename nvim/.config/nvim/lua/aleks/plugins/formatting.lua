@@ -20,7 +20,7 @@ return {
                 lua = { "stylua" },
                 c = { "clang-format" },
             },
-            format_on_save = {
+            format_after_save = {
                 lsp_fallback = false,
                 async = true,
                 timeout_ms = 10000,

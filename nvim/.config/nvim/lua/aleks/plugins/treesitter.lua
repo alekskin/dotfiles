@@ -1,29 +1,38 @@
 return {
     "nvim-treesitter/nvim-treesitter",
+    branch = "main",
     dependencies = {
         "nvim-treesitter/nvim-treesitter-context",
     },
-    event = { "BufReadPre", "BufNewFile" },
+    -- the `main` branch does not support lazy-loading
+    lazy = false,
     build = ":TSUpdate",
     config = function()
-        local treesitter = require("nvim-treesitter.configs")
+        local treesitter = require("nvim-treesitter")
         local treesitter_context = require("treesitter-context")
 
-        treesitter.setup({
-            -- A list of parser names, or "all" (the five listed parsers should always be installed)
-            ensure_installed = { "javascript", "typescript", "java", "lua", "vim", "vimdoc", "kotlin" },
+        -- parsers to always keep installed (installs asynchronously, no-op if present)
+        treesitter.install({ "javascript", "typescript", "java", "lua", "vim", "vimdoc", "kotlin" })
 
-            -- Install parsers synchronously (only applied to `ensure_installed`)
-            sync_install = false,
+        -- highlighting is Neovim's now: opt in per buffer, installing the parser on demand
+        vim.api.nvim_create_autocmd("FileType", {
+            group = vim.api.nvim_create_augroup("aleks_treesitter", { clear = true }),
+            callback = function(args)
+                local lang = vim.treesitter.language.get_lang(args.match)
+                if not lang then
+                    return
+                end
 
-            -- Automatically install missing parsers when entering buffer
-            -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-            auto_install = true,
+                local function start()
+                    pcall(vim.treesitter.start, args.buf, lang)
+                end
 
-            highlight = {
-                enable = true,
-                additional_vim_regex_highlighting = false,
-            },
+                if vim.tbl_contains(treesitter.get_installed("parsers"), lang) then
+                    start()
+                elseif vim.tbl_contains(treesitter.get_available(), lang) then
+                    treesitter.install({ lang }):await(start)
+                end
+            end,
         })
 
         -- shows current context (e.g. function. block)

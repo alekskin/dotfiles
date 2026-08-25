@@ -4,7 +4,7 @@ return {
         priority = 1000,
         lazy = false,
         config = function()
-            vim.cmd("colorscheme gruvbox-minor")
+            -- vim.cmd("colorscheme colorbuddy")
         end,
     },
     "cocopon/iceberg.vim",
@@ -30,7 +30,7 @@ return {
         "rose-pine/neovim",
         name = "rose-pine",
         config = function()
-            vim.cmd("colorscheme rose-pine")
+            -- vim.cmd("colorscheme rose-pine")
         end,
     },
     "jesseleite/nvim-noirbuddy",
@@ -40,7 +40,14 @@ return {
     "ntk148v/komau.vim",
     { "catppuccin/nvim", name = "catppuccin" },
     "LuRsT/austere.vim",
-    "ricardoraposo/gruvbox-minor.nvim",
+    {
+        "ricardoraposo/gruvbox-minor.nvim",
+        priority = 1000,
+        lazy = false,
+        config = function()
+            vim.cmd("colorscheme gruvbox-minor")
+        end,
+    },
     {
         "vague2k/vague.nvim",
         config = function()
