@@ -42,6 +42,13 @@ preclean_conflicts() {
   while IFS= read -r -d '' file; do
     rel=${file#"$pkg"/}
     target="$HOME/$rel"
+    # If a parent dir is already a stow-folded symlink (e.g. ~/.config/nvim ->
+    # ../dotfiles/nvim/.config/nvim), $target resolves back *into* the repo.
+    # The -L test below only inspects the leaf, so without this guard we would
+    # "back up" the repo's own tracked files and blow away the working tree.
+    if [[ "$(readlink -f "$target" 2>/dev/null)" == "$DOTFILES_DIR"/* ]]; then
+      continue
+    fi
     if [[ -e "$target" && ! -L "$target" ]]; then
       echo "  backup $target -> $target.bak.$stamp"
       mkdir -p "$(dirname "$target")"
@@ -54,6 +61,13 @@ preclean_conflicts() {
 # missing ~/.ssh into a symlink pointing at the repo, and generated keys would
 # be written inside the repo. Pre-creating it makes stow link files *into* it.
 mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+
+# Same folding hazard for ~/.local: the tmux-sessionizer package only ships
+# .local/scripts/, so on a machine where ~/.local is missing stow links all of
+# ~/.local at the repo and every program writing there (nvim state, mason,
+# plugin checkouts) lands inside the working tree. Pre-create the standard
+# XDG user dirs so there is nothing left for stow to fold.
+mkdir -p "$HOME/.local"/{bin,share,state,scripts}
 
 echo "=== stow dotfiles from $DOTFILES_DIR ==="
 for pkg in "${packages[@]}"; do
@@ -72,7 +86,9 @@ done
 
 if [[ -d tmux-sessionizer ]]; then
   echo "stow tmux-sessionizer"
-  stow -v --restow tmux-sessionizer 2>/dev/null || stow -v tmux-sessionizer || true
+  # --no-folding: link the individual scripts, never the parent directory.
+  stow -v --no-folding --restow tmux-sessionizer 2>/dev/null \
+    || stow -v --no-folding tmux-sessionizer || true
 fi
 
 # Enable the per-user ssh-agent. Keys are added to it on first use
