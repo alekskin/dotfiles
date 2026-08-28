@@ -14,6 +14,11 @@ return {
         telescope.setup({
             defaults = {
                 path_display = { "smart" }, -- truncates long paths and shows only relevant part
+                -- telescope 0.1.x calls the pre-rewrite nvim-treesitter API (parsers.ft_to_lang),
+                -- which the `main` branch removed. fall back to regex syntax in previews.
+                preview = {
+                    treesitter = false,
+                },
                 mappings = {
                     i = {
                         ["<Esc>"] = actions.close,
