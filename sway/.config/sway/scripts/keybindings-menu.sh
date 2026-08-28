@@ -124,6 +124,7 @@ def describe(action: str) -> str:
         (r"wtype.*ctrl.*Insert", "Copy (universal)"),
         (r"wtype.*shift.*Insert", "Paste (universal)"),
         (r"wtype.*-k x", "Cut (universal)"),
+        (r"wtype.*-k a", "Select all (universal)"),
         (r"kbd_backlight.*10%\+", "Keyboard backlight up"),
         (r"kbd_backlight.*10%-", "Keyboard backlight down"),
     ]
