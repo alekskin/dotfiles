@@ -48,7 +48,7 @@ set $term alacritty
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu wofi --show run | xargs swaymsg exec --
+set $menu ~/.config/sway/scripts/wofi.sh --show run | xargs -r swaymsg exec --
 
 ### Output configuration
 #

@@ -143,11 +143,12 @@ if [[ ! -s "$tmp_menu" ]]; then
   exit 0
 fi
 
+wofi="$HOME/.config/sway/scripts/wofi.sh"
 wofi_conf="${XDG_CONFIG_HOME:-$HOME/.config}/wofi/clipboard-config"
 if [[ -f "$wofi_conf" ]]; then
-  chosen=$(wofi --dmenu --conf "$wofi_conf" --allow-images <"$tmp_menu" 2>/dev/null || true)
+  chosen=$("$wofi" --dmenu --conf "$wofi_conf" --allow-images <"$tmp_menu" 2>/dev/null || true)
 else
-  chosen=$(wofi --dmenu --allow-images --prompt "Clipboard" --width 640 --height 420 \
+  chosen=$("$wofi" --dmenu --allow-images --prompt "Clipboard" --width 640 --height 420 \
     --cache-file /dev/null --define=image_size=128 <"$tmp_menu" 2>/dev/null || true)
 fi
 

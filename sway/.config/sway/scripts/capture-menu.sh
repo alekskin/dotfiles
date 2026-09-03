@@ -18,7 +18,7 @@ else
   Record full screen + audio"
 fi
 
-chosen=$(printf '%s\n' "$options" | wofi --dmenu --prompt "Capture" --width 360 --height 280 || true)
+chosen=$(printf '%s\n' "$options" | "$SCRIPTS/wofi.sh" --dmenu --prompt "Capture" --width 360 --height 280 || true)
 [[ -z "${chosen:-}" ]] && exit 0
 
 case "$chosen" in

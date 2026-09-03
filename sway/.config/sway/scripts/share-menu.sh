@@ -9,7 +9,7 @@ choice=$(
     "  Copy LocalSend tip" \
     "  Open Screenshots folder" \
     "  Open Downloads" \
-    | wofi --dmenu --prompt "Share" --width 320 --height 220 --cache-file /dev/null || true
+    | "$HOME/.config/sway/scripts/wofi.sh" --dmenu --prompt "Share" --width 320 --height 220 --cache-file /dev/null || true
 )
 
 [[ -z "${choice:-}" ]] && exit 0

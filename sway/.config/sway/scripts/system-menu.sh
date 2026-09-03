@@ -20,14 +20,14 @@ choice=$(
     "󰂛  Toggle notifications" \
     "󰓅  Cycle power profile" \
     "  Power menu" \
-    | wofi --dmenu --prompt "System" --width 360 --height 480 --cache-file /dev/null || true
+    | "$S/wofi.sh" --dmenu --prompt "System" --width 360 --height 480 --cache-file /dev/null || true
 )
 
 [[ -z "${choice:-}" ]] && exit 0
 
 case "$choice" in
   *"App launcher"*)
-    wofi --show run | xargs -r swaymsg exec --
+    "$S/wofi.sh" --show run | xargs -r swaymsg exec --
     ;;
   *Capture*)
     "$S/capture-menu.sh"

@@ -6,7 +6,7 @@ list=$(nmcli -t -f SSID,SECURITY,SIGNAL device wifi list --rescan yes 2>/dev/nul
   echo "$ssid  ($sec, ${signal}%)"
 done)
 
-chosen=$(echo "$list" | wofi --dmenu --prompt "Wi-Fi" --width 400 --height 300 --cache-file /dev/null 2>/dev/null)
+chosen=$(echo "$list" | "$HOME/.config/sway/scripts/wofi.sh" --dmenu --prompt "Wi-Fi" --width 400 --height 300 --cache-file /dev/null 2>/dev/null)
 [[ -z "$chosen" ]] && exit 0
 
 ssid=$(echo "$chosen" | sed 's/  (.*)//')

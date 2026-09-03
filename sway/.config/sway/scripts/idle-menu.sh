@@ -48,7 +48,7 @@ choice=$(
     "Set dim timeout…" \
     "Set blank timeout…" \
     "Set suspend timeout…" \
-    | wofi --dmenu --prompt "Idle" --width 560 --height 420 --cache-file /dev/null || true
+    | "$HOME/.config/sway/scripts/wofi.sh" --dmenu --prompt "Idle" --width 560 --height 420 --cache-file /dev/null || true
 )
 
 [[ -z "${choice:-}" || "$choice" == ──* ]] && exit 0
@@ -90,7 +90,7 @@ pick_timeout() {
       "30 minutes" \
       "45 minutes" \
       "60 minutes" \
-      | wofi --dmenu --prompt "$title (now $(fmt_sec "$current"))" --width 360 --height 400 --cache-file /dev/null || true
+      | "$HOME/.config/sway/scripts/wofi.sh" --dmenu --prompt "$title (now $(fmt_sec "$current"))" --width 360 --height 400 --cache-file /dev/null || true
   )
   case "$picked" in
     "off (0)"|"") echo 0 ;;

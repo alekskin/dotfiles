@@ -200,5 +200,5 @@ PY
 }
 
 printf '%s\n' "$list" \
-  | wofi --dmenu --prompt "Keybindings" --width 640 --height 520 --cache-file /dev/null \
+  | "$HOME/.config/sway/scripts/wofi.sh" --dmenu --prompt "Keybindings" --width 640 --height 520 --cache-file /dev/null \
   >/dev/null || true
