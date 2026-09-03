@@ -43,14 +43,14 @@ case "$choice" in
     ;;
   *Wi*)
     rfkill unblock wifi 2>/dev/null || true
-    foot --app-id=floating-tui -e impala
+    "$S/floating-tui.sh" impala
     ;;
   *Bluetooth*)
     rfkill unblock bluetooth 2>/dev/null || true
-    foot --app-id=floating-tui -e bluetui
+    "$S/floating-tui.sh" bluetui
     ;;
   *Audio*)
-    foot --app-id=floating-tui -e wiremix
+    "$S/floating-tui.sh" wiremix
     ;;
   *Lock*)
     "$S/lock.sh"

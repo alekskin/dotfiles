@@ -60,7 +60,7 @@
     "interval": 5,
     "format": "󰍛",
     "tooltip": false,
-    "on-click": "foot --app-id=floating-tui -e htop"
+    "on-click": "~/.config/sway/scripts/floating-tui.sh htop"
   },
 
   "network": {
@@ -73,7 +73,7 @@
     "tooltip-format-ethernet": "Connected",
     "tooltip-format-disconnected": "Disconnected",
     "interval": 3,
-    "on-click": "rfkill unblock wifi && foot --app-id=floating-tui -e impala"
+    "on-click": "rfkill unblock wifi && ~/.config/sway/scripts/floating-tui.sh impala"
   },
 
   "battery": {
@@ -100,7 +100,7 @@
     "format-disabled": "󰂲",
     "format-connected": "󰂱",
     "tooltip-format": "{num_connections} connected",
-    "on-click": "rfkill unblock bluetooth && foot --app-id=floating-tui -e bluetui"
+    "on-click": "rfkill unblock bluetooth && ~/.config/sway/scripts/floating-tui.sh bluetui"
   },
 
   "pulseaudio": {
@@ -111,7 +111,7 @@
       "headset": "󰋎",
       "default": ["󰕿", "󰖀", "󰕾"]
     },
-    "on-click": "foot --app-id=floating-tui -e wiremix",
+    "on-click": "~/.config/sway/scripts/floating-tui.sh wiremix",
     "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
     "scroll-step": 5,
     "tooltip-format": "{volume}%"

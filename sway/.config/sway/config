@@ -217,8 +217,8 @@ input "type:keyboard" {
     bindsym $mod+minus scratchpad show
 
 # TUI launchers
-    bindsym $mod+ctrl+b exec rfkill unblock bluetooth && foot --app-id=floating-tui -e bluetui
-    bindsym $mod+ctrl+w exec rfkill unblock wifi && foot --app-id=floating-tui -e impala
+    bindsym $mod+ctrl+b exec rfkill unblock bluetooth && ~/.config/sway/scripts/floating-tui.sh bluetui
+    bindsym $mod+ctrl+w exec rfkill unblock wifi && ~/.config/sway/scripts/floating-tui.sh impala
     bindsym $mod+ctrl+p exec ~/.config/sway/scripts/power-menu.sh
     bindsym $mod+ctrl+f exec thunar
 
