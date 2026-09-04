@@ -198,6 +198,27 @@ def _session(pts: list[tuple[int, float]], charging: bool) -> tuple[int, float, 
     return seg[j][0], seg[j][1], j == 0
 
 
+def _cpu() -> dict[str, object] | None:
+    """What the active profile actually did to the CPU.
+
+    ppd only reports the profile's *name*; this is the state a user can feel,
+    and on hardware ppd cannot drive it is the only proof the buttons work.
+    """
+    base = "/sys/devices/system/cpu/cpufreq/policy0"
+    gov = _read(os.path.join(base, "scaling_governor"))
+    cur = _int(_read(os.path.join(base, "scaling_max_freq")))
+    top = _int(_read(os.path.join(base, "cpuinfo_max_freq")))
+    if not gov or cur is None:
+        return None
+    no_turbo = _read("/sys/devices/system/cpu/intel_pstate/no_turbo")
+    return {
+        "gov": gov,
+        "maxGhz": round(cur / 1e6, 1),
+        "capped": top is not None and cur < top,
+        "turbo": None if no_turbo is None else no_turbo == "0",
+    }
+
+
 def _profiles() -> tuple[str, list[str]]:
     dest = "org.freedesktop.UPower.PowerProfiles"
     obj = "/org/freedesktop/UPower/PowerProfiles"
@@ -326,6 +347,7 @@ def main() -> None:
         "model": model,
         "profile": active,
         "profiles": names,
+        "cpu": _cpu(),
         "chargeFor": charge_for,
         "unpluggedFor": unplugged_for,
         "lastFull": _fmt_dur(now - last_full) if last_full else None,

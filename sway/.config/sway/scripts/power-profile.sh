@@ -15,10 +15,27 @@ get_profile() {
     | awk -F'"' '{print $2}'
 }
 
+# ppd owns the profile *name*, but on hardware without HWP or an ACPI platform
+# profile it has no knob to turn (see system/usr/local/bin/cpu-power-profile).
+# The helper does the actual CPU tuning; skip it silently where it isn't
+# installed, so the script still works on a machine ppd can drive by itself.
+CPU_HELPER=/usr/local/bin/cpu-power-profile
+
+apply_cpu() {
+  local profile=$1
+  [[ -x "$CPU_HELPER" ]] || return 0
+  if ! pkexec "$CPU_HELPER" "$profile" >/dev/null 2>&1; then
+    notify-send -u critical "Power" \
+      "CPU tuning failed for $profile" 2>/dev/null || true
+  fi
+}
+
 set_profile() {
   local profile=$1
   # variant string: s "name"
-  busctl set-property "$DEST" "$PATH_OBJ" "$IFACE" ActiveProfile s "$profile" 2>/dev/null
+  busctl set-property "$DEST" "$PATH_OBJ" "$IFACE" ActiveProfile s "$profile" 2>/dev/null \
+    || return 1
+  apply_cpu "$profile"
 }
 
 list_profiles() {

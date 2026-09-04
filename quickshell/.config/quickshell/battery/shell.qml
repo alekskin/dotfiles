@@ -135,6 +135,35 @@ ShellRoot {
     onExited: root.refresh()
   }
 
+  Process {
+    id: notifyProc
+  }
+
+  // A rejected hot reload otherwise draws Quickshell's own white panel in the
+  // top-left corner, which ignores the session's notification styling. Suppress
+  // it and hand the error to the notification daemon instead. The surviving
+  // (old) instance is what raises this, so the handler has to live here rather
+  // than in the config that failed to load.
+  Connections {
+    target: Quickshell
+
+    function onReloadFailed(errorString: string): void {
+      Quickshell.inhibitReloadPopup()
+      const escape = t => String(t)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+      notifyProc.command = [
+        "notify-send",
+        "-u", "critical",
+        "-a", "quickshell",
+        "Quickshell: config reload failed",
+        escape(errorString) + "\n\nqs log -i " + Quickshell.instanceId
+      ]
+      notifyProc.running = true
+    }
+  }
+
   Timer {
     interval: 4000
     running: root.open
@@ -477,6 +506,27 @@ ShellRoot {
               }
             }
           }
+        }
+
+        // Proof the buttons landed: ppd reports only the profile name, this is
+        // what the CPU is actually doing.
+        Text {
+          width: parent.width
+          text: {
+            const c = root.data.cpu
+            if (!c)
+              return ""
+            const bits = [c.gov, "max " + c.maxGhz + " GHz"]
+            if (c.turbo != null)
+              bits.push("turbo " + (c.turbo ? "on" : "off"))
+            return bits.join(" · ")
+          }
+          color: root.data.cpu && root.data.cpu.capped ? pal.peach : pal.overlay
+          font.family: "JetBrainsMono Nerd Font"
+          font.pixelSize: 10
+          horizontalAlignment: Text.AlignHCenter
+          elide: Text.ElideRight
+          visible: text.length > 0
         }
       }
     }

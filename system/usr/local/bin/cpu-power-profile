@@ -1,0 +1,70 @@
+#!/bin/bash
+# Apply the CPU side of a power profile. Runs as root through pkexec; the rule
+# in /etc/polkit-1/rules.d/49-cpu-power-profile.rules lets the local wheel
+# session call it without a password.
+#
+# power-profiles-daemon still owns the *name* of the active profile, but on this
+# machine it has nothing to write: the Broadwell i5 has no HWP, so there is no
+# energy_performance_preference file, and a Mac exposes no ACPI platform
+# profile. These are the knobs that do work here.
+
+set -eu
+
+CPUFREQ=/sys/devices/system/cpu/cpufreq
+PSTATE=/sys/devices/system/cpu/intel_pstate
+
+# Saver caps the clock at this share of the CPU's maximum. Turbo on this chip is
+# only +15% (2.7 -> 3.1 GHz), so the cap, not the turbo bit, is what actually
+# moves the power draw.
+SAVER_MAX_PCT=60
+
+case "${1-}" in
+  power-saver) governor=schedutil;   turbo=0; max_pct=$SAVER_MAX_PCT ;;
+  balanced)    governor=schedutil;   turbo=1; max_pct=100 ;;
+  performance) governor=performance; turbo=1; max_pct=100 ;;
+  *)
+    echo "usage: ${0##*/} {power-saver|balanced|performance}" >&2
+    exit 2
+    ;;
+esac
+
+write() {
+  # One unwritable attribute must not abort the rest of the profile.
+  if ! printf '%s\n' "$2" >"$1" 2>/dev/null; then
+    echo "warn: could not write $1" >&2
+  fi
+}
+
+# Read the ceilings before touching turbo: cpuinfo_max_freq reports the base
+# clock while no_turbo is 1, so measuring after would quietly make max_pct a
+# share of 2.7 GHz instead of the 3.1 GHz the CPU can actually reach.
+targets=""
+for policy in "$CPUFREQ"/policy*; do
+  [ -d "$policy" ] || continue
+  cpu_max=$(cat "$policy/cpuinfo_max_freq")
+  cpu_min=$(cat "$policy/cpuinfo_min_freq")
+  target=$((cpu_max * max_pct / 100))
+  if [ "$target" -lt "$cpu_min" ]; then
+    target=$cpu_min
+  fi
+  targets="$targets $policy=$target"
+done
+
+# Turbo before the caps: while no_turbo is 1 the kernel clamps scaling_max_freq
+# to the base clock, so a cap written first would be capped again in turn.
+if [ -e "$PSTATE/no_turbo" ]; then
+  write "$PSTATE/no_turbo" "$((1 - turbo))"
+fi
+
+for entry in $targets; do
+  policy=${entry%%=*}
+  target=${entry##*=}
+  if grep -qw -- "$governor" "$policy/scaling_available_governors" 2>/dev/null; then
+    write "$policy/scaling_governor" "$governor"
+  fi
+  write "$policy/scaling_max_freq" "$target"
+done
+
+gov=$(cat "$CPUFREQ/policy0/scaling_governor" 2>/dev/null || echo "?")
+max=$(cat "$CPUFREQ/policy0/scaling_max_freq" 2>/dev/null || echo 0)
+echo "$1: governor=$gov max=$((max / 1000)) MHz turbo=$([ "$turbo" = 1 ] && echo on || echo off)"

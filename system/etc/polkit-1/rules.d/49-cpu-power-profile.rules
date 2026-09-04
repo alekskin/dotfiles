@@ -1,0 +1,12 @@
+// Let the local, active wheel session apply CPU power profiles without a
+// password prompt. Scoped to one root-owned program, so this grants exactly
+// "set governor / turbo / max clock" and nothing else.
+polkit.addRule(function (action, subject) {
+    if (action.id === "org.freedesktop.policykit.exec" &&
+        action.lookup("program") === "/usr/local/bin/cpu-power-profile" &&
+        subject.isInGroup("wheel") &&
+        subject.local &&
+        subject.active) {
+        return polkit.Result.YES;
+    }
+});
