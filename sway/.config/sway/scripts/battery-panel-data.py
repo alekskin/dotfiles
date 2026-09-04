@@ -172,30 +172,56 @@ def _last_full(pts: list[tuple[int, float]]) -> int | None:
     return ts
 
 
-def _session(pts: list[tuple[int, float]], charging: bool) -> tuple[int, float, bool] | None:
-    """Start of the charge/discharge run in progress: (ts, pct, bounded).
+def _asleep(pts: list[tuple[int, float]], since: int) -> int:
+    """Seconds since `since` that the machine spent suspended or off.
 
-    History is only written while the machine is awake, so a gap in it is an
-    unobserved suspend and says nothing about what the battery did meanwhile.
-    The run is therefore walked back no further than the newest contiguous
-    segment; `bounded` marks a start that is hidden in the gap before it, i.e.
-    the session is at least this old rather than exactly.
+    UPower only writes history while the machine is running, so every hole
+    larger than GAP_SEC in the raw samples is time it was not.
+    """
+    total = 0
+    for (t0, _), (t1, _) in zip(pts, pts[1:]):
+        if t1 <= since:
+            continue
+        gap = t1 - max(t0, since)
+        if gap > GAP_SEC:
+            total += gap
+    return total
+
+
+def _session(
+    pts: list[tuple[int, float]], charging: bool
+) -> tuple[int, float, bool, int] | None:
+    """The charge/discharge run in progress: (start_ts, start_pct, bounded, asleep).
+
+    A suspend leaves a hole in the history, but it does not end the session: if
+    the battery was already moving this way before the hole and is still moving
+    this way after it, the machine simply slept on battery and the run spans the
+    gap. What a hole cannot show is a *turnaround* inside it -- unplugged during
+    sleep, say -- so the walk stops at the near side of a gap whenever the step
+    before it went the other way, and `bounded` then marks the reported start as
+    a lower bound rather than the real one.
     """
     if len(pts) < 2:
         return None
-    i = len(pts) - 1
-    while i > 0 and pts[i][0] - pts[i - 1][0] <= GAP_SEC:
-        i -= 1
-    seg = _simplify(pts[i:])
-    if len(seg) < 2:
+    simp = _simplify(pts)
+    if len(simp) < 2:
         return None
-    rising = seg[-1][1] > seg[-2][1]
+    rising = simp[-1][1] > simp[-2][1]
     if rising is not charging:
         return None  # just turned around; the new run has not moved yet
-    j = len(seg) - 1
-    while j > 0 and (seg[j][1] > seg[j - 1][1]) is rising:
-        j -= 1
-    return seg[j][0], seg[j][1], j == 0
+
+    i = len(simp) - 1
+    while i > 0 and (simp[i][1] > simp[i - 1][1]) is rising:
+        if simp[i][0] - simp[i - 1][0] > GAP_SEC:
+            # Crossing a hole: only trust it if the battery was already going
+            # this way before the machine went to sleep.
+            if i < 2 or (simp[i - 1][1] > simp[i - 2][1]) is not rising:
+                break
+        i -= 1
+
+    start_ts, start_pct = simp[i]
+    hidden = i > 0 and simp[i][0] - simp[i - 1][0] > GAP_SEC
+    return start_ts, start_pct, hidden or i == 0, _asleep(pts, start_ts)
 
 
 def _cpu() -> dict[str, object] | None:
@@ -308,15 +334,20 @@ def main() -> None:
     now = time.time()
     charge_for = unplugged_for = None
     added = used = None
+    awake = asleep = None
     bounded = False
     if sess:
-        start_ts, start_pct, bounded = sess
-        span = _fmt_dur(now - start_ts)
+        start_ts, start_pct, bounded, asleep_s = sess
+        elapsed = now - start_ts
+        span = _fmt_dur(elapsed)
         delta = round(abs(pct - start_pct)) if pct is not None else None
         if charging:
             charge_for, added = span, delta
         else:
             unplugged_for, used = span, delta
+        if asleep_s > GAP_SEC:
+            asleep = _fmt_dur(asleep_s)
+            awake = _fmt_dur(max(0, elapsed - asleep_s))
 
     if full_state:
         mode = "full"
@@ -354,6 +385,8 @@ def main() -> None:
         "addedPct": added,
         "usedPct": used,
         "sessionBounded": bounded,
+        "sessionAwake": awake,
+        "sessionAsleep": asleep,
     }
     print(json.dumps(out, separators=(",", ":")))
 

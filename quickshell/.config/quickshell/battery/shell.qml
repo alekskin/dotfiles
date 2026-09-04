@@ -430,13 +430,19 @@ ShellRoot {
             }
             Stat {
               label: root.charging ? "Added" : "Used"
+              // Magnitude only: the label carries the direction, and "≥−15%"
+              // would read as a bound in the wrong direction.
               value: {
-                if (root.charging && root.data.addedPct != null)
-                  return root.atLeast("+" + root.data.addedPct + "%")
-                if (root.discharging && root.data.usedPct != null)
-                  return root.atLeast("−" + root.data.usedPct + "%")
-                return "—"
+                const v = root.charging ? root.data.addedPct : root.data.usedPct
+                return v != null ? root.atLeast(v + "%") : "—"
               }
+            }
+            // Only worth splitting out once the session has actually spanned a
+            // suspend; otherwise awake time is just the session time again.
+            Stat {
+              label: "Awake"
+              value: root.dash(root.data.sessionAwake)
+              visible: !!root.data.sessionAsleep
             }
           }
           Column {
@@ -449,6 +455,11 @@ ShellRoot {
             Stat {
               label: "Now"
               value: root.data.energyWh != null ? (root.data.energyWh + " Wh") : "—"
+            }
+            Stat {
+              label: "Asleep"
+              value: root.dash(root.data.sessionAsleep)
+              visible: !!root.data.sessionAsleep
             }
           }
         }
