@@ -1,51 +1,100 @@
 #!/bin/bash
-# Volume / brightness helpers with swayosd if available.
+# Volume / brightness keys. The on-screen readout is a notification: one
+# replaceable bubble carrying a `value` hint, which mako draws as a progress
+# bar (see the [app-name=osd] block in mako/config). This replaces swayosd,
+# whose GTK popup ignored the session's theme.
+#
 # Usage: media-keys.sh vol-up|vol-down|vol-mute|mic-mute|bright-up|bright-down
 
 set -u
 
+VOL_STEP=5
+BRIGHT_STEP=10
+SINK="@DEFAULT_AUDIO_SINK@"
+SOURCE="@DEFAULT_AUDIO_SOURCE@"
+
+# Same tag for every reading, so holding a key updates one bubble in place
+# instead of stacking a column of them.
+osd() {
+  local glyph=$1 label=$2 value=${3:-}
+  local args=(-a osd -h "string:x-canonical-private-synchronous:osd")
+  [[ -n $value ]] && args+=(-h "int:value:$value")
+  notify-send "${args[@]}" "$glyph  $label" 2>/dev/null || true
+}
+
+# "Volume: 0.50" / "Volume: 0.50 [MUTED]" -> percent, and mute state via rc.
+read_volume() {
+  local out
+  out=$(wpctl get-volume "$1" 2>/dev/null) || return 2
+  awk '{printf "%.0f\n", $2 * 100}' <<<"$out"
+  [[ $out == *"[MUTED]"* ]] && return 1
+  return 0
+}
+
+vol_glyph() {
+  local pct=$1 muted=$2
+  if ((muted)); then echo "󰝟"
+  elif ((pct == 0)); then echo "󰕿"
+  elif ((pct < 34)); then echo "󰕿"
+  elif ((pct < 67)); then echo "󰖀"
+  else echo "󰕾"
+  fi
+}
+
+show_volume() {
+  local pct muted=0
+  pct=$(read_volume "$SINK") || muted=1
+  [[ -z $pct ]] && return
+  if ((muted)); then
+    osd "$(vol_glyph "$pct" 1)" "Muted" 0
+  else
+    osd "$(vol_glyph "$pct" 0)" "$pct%" "$pct"
+  fi
+}
+
+show_mic() {
+  local pct muted=0
+  pct=$(read_volume "$SOURCE") || muted=1
+  ((muted)) && osd "󰍭" "Mic muted" || osd "󰍬" "Mic on"
+}
+
+show_brightness() {
+  local pct glyph
+  pct=$(brightnessctl -m 2>/dev/null | cut -d, -f4 | tr -d '%')
+  [[ -z $pct ]] && return
+  if ((pct < 34)); then glyph="󰃞"
+  elif ((pct < 67)); then glyph="󰃟"
+  else glyph="󰃠"
+  fi
+  osd "$glyph" "$pct%" "$pct"
+}
+
 case "${1:-}" in
   vol-up)
-    if command -v swayosd-client >/dev/null; then
-      swayosd-client --output-volume raise
-    else
-      pactl set-sink-volume @DEFAULT_SINK@ +5%
-    fi
+    # -l caps the boost: without it wpctl walks past 100% into distortion.
+    wpctl set-mute "$SINK" 0 2>/dev/null
+    wpctl set-volume -l 1.0 "$SINK" "${VOL_STEP}%+"
+    show_volume
     ;;
   vol-down)
-    if command -v swayosd-client >/dev/null; then
-      swayosd-client --output-volume lower
-    else
-      pactl set-sink-volume @DEFAULT_SINK@ -5%
-    fi
+    wpctl set-volume -l 1.0 "$SINK" "${VOL_STEP}%-"
+    show_volume
     ;;
   vol-mute)
-    if command -v swayosd-client >/dev/null; then
-      swayosd-client --output-volume mute-toggle
-    else
-      pactl set-sink-mute @DEFAULT_SINK@ toggle
-    fi
+    wpctl set-mute "$SINK" toggle
+    show_volume
     ;;
   mic-mute)
-    if command -v swayosd-client >/dev/null; then
-      swayosd-client --input-volume mute-toggle
-    else
-      pactl set-source-mute @DEFAULT_SOURCE@ toggle
-    fi
+    wpctl set-mute "$SOURCE" toggle
+    show_mic
     ;;
   bright-up)
-    if command -v swayosd-client >/dev/null; then
-      swayosd-client --brightness raise
-    else
-      brightnessctl set 10%+
-    fi
+    brightnessctl set "${BRIGHT_STEP}%+" >/dev/null
+    show_brightness
     ;;
   bright-down)
-    if command -v swayosd-client >/dev/null; then
-      swayosd-client --brightness lower
-    else
-      brightnessctl set 10%-
-    fi
+    brightnessctl set "${BRIGHT_STEP}%-" >/dev/null
+    show_brightness
     ;;
   *)
     echo "usage: $0 vol-up|vol-down|vol-mute|mic-mute|bright-up|bright-down" >&2

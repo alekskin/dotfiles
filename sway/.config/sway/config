@@ -13,7 +13,6 @@ exec_always /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec mako
 
 # On-screen display for volume / brightness / caps
-exec swayosd-server
 
 # Clipboard history (cliphist) — start on login and re-check on reload
 exec_always ~/.config/sway/scripts/clipboard-daemon.sh
@@ -263,7 +262,7 @@ bindswitch --reload --locked lid:off exec ~/.config/sway/scripts/lid.sh off
 # Special keys
 bindsym --locked XF86PowerOff exec ~/.config/sway/scripts/power-menu.sh
 
-# Brightness / volume with OSD (media-keys.sh falls back if swayosd missing)
+# Brightness / volume; the readout is a mako notification (see media-keys.sh)
 bindsym --locked XF86MonBrightnessDown exec ~/.config/sway/scripts/media-keys.sh bright-down
 bindsym --locked XF86MonBrightnessUp exec ~/.config/sway/scripts/media-keys.sh bright-up
 bindsym --locked XF86AudioRaiseVolume exec ~/.config/sway/scripts/media-keys.sh vol-up

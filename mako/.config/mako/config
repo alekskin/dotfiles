@@ -66,3 +66,14 @@ format=<b>%s</b>\n%b
 [summary~="Screen recording"]
 max-icon-size=48
 format=<b>%s</b>\n%b
+
+# Volume / brightness OSD from media-keys.sh. Last block wins over the urgency
+# rules above. The `value` hint media-keys.sh sends is drawn with progress-color,
+# and x-canonical-private-synchronous keeps a held-down key updating one bubble.
+[app-name=osd]
+format=<b>%s</b>
+default-timeout=1500
+history=0
+border-color=#89b4fa
+# Above the lock screen, so the keys still show a readout while locked.
+layer=overlay
