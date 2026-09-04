@@ -62,6 +62,27 @@ show_mic() {
   ((muted)) && osd "󰍭" "Mic muted" || osd "󰍬" "Mic on"
 }
 
+# brightnessctl's relative steps are a percentage of the device's raw range
+# (255 for the keyboard LED, 1388 for the panel), so they never land on round
+# numbers and the rounding error accumulates: 0, 10, 20, 31, 40, 51, 61...
+# Snap to the next multiple of the step instead, which also guarantees the
+# value actually moves even when it is already on a boundary.
+step_brightness() {
+  local dir=$1
+  shift
+  local cur target
+  cur=$(brightnessctl -m "$@" 2>/dev/null | cut -d, -f4 | tr -d '%')
+  [[ -z $cur ]] && return 1
+  if [[ $dir == up ]]; then
+    target=$((cur / BRIGHT_STEP * BRIGHT_STEP + BRIGHT_STEP))
+  else
+    target=$(((cur + BRIGHT_STEP - 1) / BRIGHT_STEP * BRIGHT_STEP - BRIGHT_STEP))
+  fi
+  ((target < 0)) && target=0
+  ((target > 100)) && target=100
+  brightnessctl "$@" set "${target}%" >/dev/null 2>&1
+}
+
 show_brightness() {
   local pct glyph
   pct=$(brightnessctl -m 2>/dev/null | cut -d, -f4 | tr -d '%')
@@ -103,19 +124,19 @@ case "${1:-}" in
     show_mic
     ;;
   bright-up)
-    brightnessctl set "${BRIGHT_STEP}%+" >/dev/null
+    step_brightness up
     show_brightness
     ;;
   bright-down)
-    brightnessctl set "${BRIGHT_STEP}%-" >/dev/null
+    step_brightness down
     show_brightness
     ;;
   kbd-up)
-    brightnessctl -d "$KBD_DEV" set "${BRIGHT_STEP}%+" >/dev/null 2>&1
+    step_brightness up -d "$KBD_DEV"
     show_kbd
     ;;
   kbd-down)
-    brightnessctl -d "$KBD_DEV" set "${BRIGHT_STEP}%-" >/dev/null 2>&1
+    step_brightness down -d "$KBD_DEV"
     show_kbd
     ;;
   *)
