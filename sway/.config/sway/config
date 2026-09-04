@@ -97,6 +97,12 @@ input "type:touchpad" {
 	click_method clickfinger
 	natural_scroll enabled
 	tap enabled
+	# Scale scroll distance down; the bcm5974 is far too eager at 1.0.
+	# Measured with a full-pad swipe: the factor scales delivered scroll
+	# very nearly linearly (0.35 gave 2.6x less than 1.0 over 3 swipes).
+	# Tune it live, no reload needed:
+	#   swaymsg input type:touchpad scroll_factor 0.3
+	scroll_factor 0.2
 }
 
 input "type:keyboard" {
