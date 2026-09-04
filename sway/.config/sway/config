@@ -24,6 +24,9 @@ exec_always ~/.config/sway/scripts/idle-daemon.sh
 # Battery low/critical notifications
 exec_always ~/.config/sway/scripts/battery-monitor.sh
 
+# Quickshell battery popup (waybar left-click)
+exec sh -c 'command -v qs >/dev/null && exec qs -c battery'
+
 font pango: JetBrainsMono NFM Medium 14
 
 gaps inner 2

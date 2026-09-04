@@ -28,6 +28,7 @@ packages=(
   tmux
   waybar
   wofi
+  quickshell
   xdg-desktop-portal
 )
 

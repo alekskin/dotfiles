@@ -1,2 +1,5 @@
 tmux/.config/tmux/plugins
 nvim/.config/nvim/plugin
+
+# python bytecode
+__pycache__/
