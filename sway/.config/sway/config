@@ -275,8 +275,8 @@ bindsym --locked XF86AudioRaiseVolume exec ~/.config/sway/scripts/media-keys.sh 
 bindsym --locked XF86AudioLowerVolume exec ~/.config/sway/scripts/media-keys.sh vol-down
 bindsym --locked XF86AudioMute exec ~/.config/sway/scripts/media-keys.sh vol-mute
 bindsym --locked XF86AudioMicMute exec ~/.config/sway/scripts/media-keys.sh mic-mute
-bindsym --locked XF86KbdBrightnessUp exec brightnessctl -d "smc::kbd_backlight" set 10%+
-bindsym --locked XF86KbdBrightnessDown exec brightnessctl -d "smc::kbd_backlight" set 10%-
+bindsym --locked XF86KbdBrightnessUp exec ~/.config/sway/scripts/media-keys.sh kbd-up
+bindsym --locked XF86KbdBrightnessDown exec ~/.config/sway/scripts/media-keys.sh kbd-down
 
 # Media keys (MPRIS / playerctl — works with mpv-mpris, browsers, etc.)
 bindsym --locked XF86AudioPlay exec playerctl play-pause

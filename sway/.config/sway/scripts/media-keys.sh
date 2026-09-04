@@ -5,11 +5,15 @@
 # whose GTK popup ignored the session's theme.
 #
 # Usage: media-keys.sh vol-up|vol-down|vol-mute|mic-mute|bright-up|bright-down
+#                      |kbd-up|kbd-down
 
 set -u
 
 VOL_STEP=5
 BRIGHT_STEP=10
+# The Mac's keyboard backlight is an LED device, not a backlight one, so it
+# needs naming explicitly; brightnessctl's default device is the screen.
+KBD_DEV="smc::kbd_backlight"
 SINK="@DEFAULT_AUDIO_SINK@"
 SOURCE="@DEFAULT_AUDIO_SOURCE@"
 
@@ -69,6 +73,16 @@ show_brightness() {
   osd "$glyph" "$pct%" "$pct"
 }
 
+show_kbd() {
+  local pct glyph
+  pct=$(brightnessctl -m -d "$KBD_DEV" 2>/dev/null | cut -d, -f4 | tr -d '%')
+  [[ -z $pct ]] && return
+  # Off is worth its own glyph: at 0% the key otherwise looks like it did
+  # nothing at all.
+  if ((pct == 0)); then glyph="󰌌"; else glyph="󰥻"; fi
+  osd "$glyph" "Keyboard $pct%" "$pct"
+}
+
 case "${1:-}" in
   vol-up)
     # -l caps the boost: without it wpctl walks past 100% into distortion.
@@ -96,8 +110,16 @@ case "${1:-}" in
     brightnessctl set "${BRIGHT_STEP}%-" >/dev/null
     show_brightness
     ;;
+  kbd-up)
+    brightnessctl -d "$KBD_DEV" set "${BRIGHT_STEP}%+" >/dev/null 2>&1
+    show_kbd
+    ;;
+  kbd-down)
+    brightnessctl -d "$KBD_DEV" set "${BRIGHT_STEP}%-" >/dev/null 2>&1
+    show_kbd
+    ;;
   *)
-    echo "usage: $0 vol-up|vol-down|vol-mute|mic-mute|bright-up|bright-down" >&2
+    echo "usage: $0 vol-up|vol-down|vol-mute|mic-mute|bright-up|bright-down|kbd-up|kbd-down" >&2
     exit 1
     ;;
 esac
