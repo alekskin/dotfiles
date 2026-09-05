@@ -26,6 +26,12 @@ exec_always ~/.config/sway/scripts/battery-monitor.sh
 # Quickshell battery popup (waybar left-click)
 exec sh -c 'command -v qs >/dev/null && exec qs -n -c battery'
 
+# Start every session on the saver profile. power-profiles-daemon does restore
+# the profile *name* across reboots by itself, but the governor, turbo and clock
+# cap behind it are kernel state that comes back at the defaults, so without
+# this the panel would claim power-saver while the CPU ran unrestricted.
+exec ~/.config/sway/scripts/power-profile.sh power-saver --quiet --wait 300
+
 font pango: JetBrainsMono NFM Medium 14
 
 gaps inner 2

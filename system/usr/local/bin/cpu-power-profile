@@ -35,9 +35,14 @@ write() {
   fi
 }
 
-# Read the ceilings before touching turbo: cpuinfo_max_freq reports the base
-# clock while no_turbo is 1, so measuring after would quietly make max_pct a
-# share of 2.7 GHz instead of the 3.1 GHz the CPU can actually reach.
+# The true ceiling is only visible with turbo *enabled*: cpuinfo_max_freq
+# reports the base clock while no_turbo is 1. Lift it first, or switching out
+# of a profile that had turbo off computes every cap from 2.7 GHz and the full
+# 3.1 GHz is never restored.
+if [ -e "$PSTATE/no_turbo" ]; then
+  write "$PSTATE/no_turbo" 0
+fi
+
 targets=""
 for policy in "$CPUFREQ"/policy*; do
   [ -d "$policy" ] || continue
@@ -50,8 +55,9 @@ for policy in "$CPUFREQ"/policy*; do
   targets="$targets $policy=$target"
 done
 
-# Turbo before the caps: while no_turbo is 1 the kernel clamps scaling_max_freq
-# to the base clock, so a cap written first would be capped again in turn.
+# Now settle turbo where this profile wants it, still before the caps: while
+# no_turbo is 1 the kernel clamps scaling_max_freq to the base clock, so a cap
+# written first would be capped again in turn.
 if [ -e "$PSTATE/no_turbo" ]; then
   write "$PSTATE/no_turbo" "$((1 - turbo))"
 fi

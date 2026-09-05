@@ -101,3 +101,13 @@ fi
 
 echo "=== dotfiles install finished ==="
 echo "Open a new shell (or: source ~/.bashrc) for starship/fzf."
+
+# Deliberately not run here: this script stays sudo-free so it is safe to run
+# at any time. Point at it instead, and only when it has not been done, so the
+# power-profile buttons do not fail silently on a fresh machine.
+if [[ ! -x /usr/local/bin/cpu-power-profile ]]; then
+  echo
+  echo "System files are not installed yet (polkit rule + CPU helper, needed"
+  echo "for the power-profile buttons to do anything):"
+  echo "  sudo $DOTFILES_DIR/system/install-system.sh"
+fi

@@ -50,13 +50,48 @@ list_profiles() {
   fi
 }
 
-if ! busctl status "$DEST" &>/dev/null; then
-  notify-send -u critical "Power" \
+action=${1:-cycle}
+shift 2>/dev/null || true
+
+quiet=0
+wait_for=0
+while (($#)); do
+  case $1 in
+    --quiet) quiet=1 ;;
+    --wait)
+      wait_for=${2:-0}
+      shift
+      ;;
+    *)
+      echo "unknown option: $1" >&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+# power-profiles-daemon is ordered After=multi-user.target, so on a machine
+# where something slow sits on that target -- docker restoring containers here
+# costs two minutes -- it is simply not on the bus yet when the session starts.
+# D-Bus activation cannot jump the queue either, since it starts the same
+# ordered unit. So the login path waits instead of announcing a failure the
+# user can do nothing about, while an interactive call still reports at once.
+wait_for_daemon() {
+  local deadline=$((SECONDS + wait_for))
+  while :; do
+    busctl status "$DEST" &>/dev/null && return 0
+    ((SECONDS >= deadline)) && return 1
+    sleep 2
+  done
+}
+
+if ! wait_for_daemon; then
+  ((quiet)) || notify-send -u critical "Power" \
     "power-profiles-daemon is not running" 2>/dev/null || true
   exit 1
 fi
 
-case "${1:-cycle}" in
+case "$action" in
   get)
     get_profile
     ;;
@@ -94,15 +129,20 @@ case "${1:-cycle}" in
     notify-send -u low "Power profile" "${now:-$next}" 2>/dev/null || true
     ;;
   power-saver|balanced|performance)
-    if ! set_profile "$1"; then
-      notify-send -u critical "Power" "Failed to set profile: $1" 2>/dev/null || true
+    if ! set_profile "$action"; then
+      ((quiet)) || notify-send -u critical "Power" \
+        "Failed to set profile: $action" 2>/dev/null || true
       exit 1
     fi
-    now=$(get_profile)
-    notify-send -u low "Power profile" "${now:-$1}" 2>/dev/null || true
+    # --quiet is for the login default: announcing a profile nobody chose is
+    # just noise, and mako may not even be up yet.
+    if ((!quiet)); then
+      now=$(get_profile)
+      notify-send -u low "Power profile" "${now:-$action}" 2>/dev/null || true
+    fi
     ;;
   *)
-    echo "usage: $0 [cycle|get|list|power-saver|balanced|performance]" >&2
+    echo "usage: $0 [cycle|get|list|power-saver|balanced|performance] [--quiet] [--wait SECONDS]" >&2
     exit 1
     ;;
 esac
