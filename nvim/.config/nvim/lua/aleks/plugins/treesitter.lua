@@ -11,6 +11,15 @@ return {
         local treesitter = require("nvim-treesitter")
         local treesitter_context = require("treesitter-context")
 
+        -- Parser repositories declare tree-sitter as a local dependency, which makes
+        -- Volta's shim ignore the globally installed CLI while building a parser.
+        if vim.fn.executable("volta") == 1 then
+            local tree_sitter = vim.system({ "volta", "which", "tree-sitter" }, { text = true }):wait()
+            if tree_sitter.code == 0 then
+                vim.env.PATH = vim.fs.dirname(vim.trim(tree_sitter.stdout)) .. ":" .. vim.env.PATH
+            end
+        end
+
         -- parsers to always keep installed (installs asynchronously, no-op if present)
         treesitter.install({ "javascript", "typescript", "java", "lua", "vim", "vimdoc", "kotlin" })
 
