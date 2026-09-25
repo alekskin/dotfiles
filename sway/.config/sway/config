@@ -239,9 +239,9 @@ input "type:keyboard" {
 # Universal clipboard (Omarchy-style Super+A/C/X/V via wtype → Insert / Ctrl+X)
 # Works in apps that honor Ctrl+Insert / Shift+Insert (terminals, most GTK/Qt).
     bindsym $mod+a exec wtype -M ctrl -k a -m ctrl
-    bindsym $mod+c exec wtype -M ctrl -P Insert -m ctrl -p Insert
+    bindsym $mod+c exec wtype -M ctrl -P Insert -p Insert -m ctrl
     bindsym $mod+x exec wtype -M ctrl -k x -m ctrl
-    bindsym $mod+v exec wtype -M shift -P Insert -m shift -p Insert
+    bindsym $mod+v exec wtype -M shift -P Insert -p Insert -m shift
     bindsym $mod+ctrl+v exec ~/.config/sway/scripts/clipboard-menu.sh
 
 # Capture menu (Omarchy-style Super+Ctrl+C): screenshot region/full + screenrecord
@@ -312,8 +312,12 @@ mode "resize" {
     # Return to default mode
     bindsym Return mode "default"
     bindsym Escape mode "default"
+    # Same key toggles back out, so the mode can never trap you.
+    bindsym $mod+ctrl+r mode "default"
 }
-bindsym $mod+r mode "resize"
+# Moved off $mod+r: that was easy to hit by mistake (next to $mod+e/w/s, and
+# Super+K on the ru layout), and a mode silently disables every $mod binding.
+bindsym $mod+ctrl+r mode "resize"
 
 for_window [app_id="floating-tui"] floating enable, resize set 900 600
 

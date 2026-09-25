@@ -41,6 +41,14 @@ window#waybar {
   color: #f38ba8;
 }
 
+#mode {
+  color: #1e1e2e;
+  background-color: #fab387;
+  font-weight: bold;
+  padding: 0 8px;
+  margin: 0 6px;
+}
+
 #clock {
   margin: 0 8px;
 }

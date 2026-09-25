@@ -4,7 +4,7 @@
   "position": "top",
   "spacing": 0,
   "height": 26,
-  "modules-left": ["sway/workspaces"],
+  "modules-left": ["sway/workspaces", "sway/mode"],
   "modules-center": ["clock"],
   "modules-right": [
     "custom/screenrecord",
@@ -31,6 +31,13 @@
     "return-type": "json",
     "interval": 5,
     "on-click": "~/.config/sway/scripts/toggle-idle.sh"
+  },
+
+  // Only renders while a non-default binding mode is active (e.g. "resize"),
+  // so the bar is unchanged the rest of the time.
+  "sway/mode": {
+    "format": "󰩨 {}",
+    "tooltip": false
   },
 
   "sway/workspaces": {
