@@ -307,7 +307,7 @@ mode "resize" {
 # Super+K on the ru layout), and a mode silently disables every $mod binding.
 bindsym $mod+ctrl+r mode "resize"
 
-for_window [app_id="floating-tui"] floating enable, resize set 900 600
+for_window [app_id="^floating-tui-"] floating enable, resize set 900 600
 
 bar {
 	swaybar_command waybar
