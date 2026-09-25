@@ -197,7 +197,6 @@ input "type:keyboard" {
 # Layout stuff:
 #
     # Split: Super+b horizontal; Super+\ vertical
-    # Super+v = paste; Super+Shift+1..0 = move window to workspace (unchanged)
     bindsym $mod+b splith
     bindsym $mod+backslash splitv
 
@@ -236,12 +235,7 @@ input "type:keyboard" {
     bindsym $mod+ctrl+p exec ~/.config/sway/scripts/power-menu.sh
     bindsym $mod+ctrl+f exec thunar
 
-# Universal clipboard (Omarchy-style Super+A/C/X/V via wtype → Insert / Ctrl+X)
-# Works in apps that honor Ctrl+Insert / Shift+Insert (terminals, most GTK/Qt).
-    bindsym $mod+a exec wtype -M ctrl -k a -m ctrl
-    bindsym $mod+c exec wtype -M ctrl -P Insert -p Insert -m ctrl
-    bindsym $mod+x exec wtype -M ctrl -k x -m ctrl
-    bindsym $mod+v exec wtype -M shift -P Insert -p Insert -m shift
+# Clipboard history
     bindsym $mod+ctrl+v exec ~/.config/sway/scripts/clipboard-menu.sh
 
 # Capture menu (Omarchy-style Super+Ctrl+C): screenshot region/full + screenrecord
