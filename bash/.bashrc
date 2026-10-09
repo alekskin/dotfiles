@@ -33,6 +33,9 @@ fi
 
 PATH="$PATH:$HOME/.local/bin"
 
+# Ctrl+F: tmux-sessionizer (same script as prefix+f in tmux.conf)
+bind -x '"\C-f": ~/.local/scripts/tmux-sessionizer.sh'
+
 # opencode
 [[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
 
