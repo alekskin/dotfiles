@@ -85,6 +85,7 @@ def describe(action: str) -> str:
     patterns = [
         (r"^exec \$term\b", "Open terminal"),
         (r"^exec \$menu\b", "App launcher"),
+        (r"^exec \$browser\b", "Open browser"),
         (r"^kill$", "Close window"),
         (r"^reload$", "Reload sway config"),
         (r"^floating toggle$", "Toggle floating"),

@@ -53,6 +53,8 @@ set $up k
 set $right l
 # Your preferred terminal emulator
 set $term alacritty
+# Your preferred web browser
+set $browser chromium
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -228,6 +230,7 @@ input "type:keyboard" {
     bindsym $mod+ctrl+w exec rfkill unblock wifi && ~/.config/sway/scripts/floating-tui.sh impala
     bindsym $mod+ctrl+p exec ~/.config/sway/scripts/power-menu.sh
     bindsym $mod+ctrl+f exec thunar
+    bindsym $mod+ctrl+Shift+b exec $browser
 
 # Clipboard history
     bindsym $mod+ctrl+v exec ~/.config/sway/scripts/clipboard-menu.sh
