@@ -15,6 +15,7 @@ fi
 
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
+alias telegram=Telegram
 PS1='[\u@\h \W]\$ '
 
 # Default editor (git, systemctl edit, etc.) — package: neovim
@@ -31,7 +32,7 @@ if command -v fzf >/dev/null 2>&1; then
   eval "$(fzf --bash)"
 fi
 
-PATH="$PATH:$HOME/.local/bin"
+PATH="$PATH:$HOME/.local/bin:$HOME/.railway/bin"
 
 # Ctrl+F: tmux-sessionizer (same script as prefix+f in tmux.conf)
 bind -x '"\C-f": ~/.local/scripts/tmux-sessionizer.sh'
@@ -39,7 +40,11 @@ bind -x '"\C-f": ~/.local/scripts/tmux-sessionizer.sh'
 # opencode
 [[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
 
+
 # >>> grok installer >>>
 export PATH="$HOME/.grok/bin:$PATH"
 [[ -r "$HOME/.grok/completions/bash/grok.bash" ]] && source "$HOME/.grok/completions/bash/grok.bash"
 # <<< grok installer <<<
+
+# Turso
+export PATH="$PATH:/home/aleks/.turso"
